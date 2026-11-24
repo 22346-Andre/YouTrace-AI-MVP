@@ -96,3 +96,12 @@ git remote add origin https://github.com/SEU_USUARIO/youtrace-ai.git
 git push -u origin main
 ```
 O repositório não foi criado ou publicado automaticamente. Revise o código, execute o projeto e faça seus próprios commits antes de enviar o link.
+
+## Versão 2 — diagnóstico generativo opcional
+O botão **Gerar análise com IA** chama `POST /api/incidents/{id}/diagnosis`. Sem configuração, retorna explicitamente o motor local. Com endpoint compatível com Chat Completions, envia apenas logs sintéticos, serviço e quantidade de relatos; não envia texto livre. A resposta é uma hipótese para revisão humana. O limite de concorrência é uma chamada, com timeout de 45 s. Não é um sistema de produção.
+
+Para Ollama local no Windows, instale Ollama, execute `ollama pull qwen2.5:3b`, copie `.env.example` para `.env`, e execute `docker compose up --build -d`. O servidor Ollama precisa estar acessível ao Docker via host.docker.internal; se necessário configure OLLAMA_HOST e restrinja o acesso com firewall. Para um provedor remoto, informe URL completa, modelo e chave no `.env` privado. Não publique credenciais.
+
+Validação: execute `curl -X POST http://localhost:8080/api/incidents/PAY/diagnosis`. Sem IA configurada, espere `source: local`; com serviço disponível, `source: generative`. Teste também desligando o provedor. A versão offline antiga não oferece esta rota; use Docker para a v2.
+
+Deploy público ainda pendente: não exponha o endpoint com chave paga sem autenticação, limites por usuário e isolamento de sessões. O cenário em memória é compartilhado entre visitantes.
